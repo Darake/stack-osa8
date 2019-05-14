@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 const Authors = (props) => {
   if (!props.show) {
@@ -8,7 +8,18 @@ const Authors = (props) => {
     return <div>loading...</div>
   }
   
+  const [name, setName] = useState('')
+  const [born, setBorn] = useState('')
   const authors = props.authors.data.allAuthors
+
+  const handleUpdate = async e => {
+    e.preventDefault()
+    await props.addYear({
+      variables: { name, setBornTo: Number(born) }
+    })
+    setName('')
+    setBorn('')
+  }
 
   return (
     <div>
@@ -33,7 +44,20 @@ const Authors = (props) => {
           )}
         </tbody>
       </table>
-
+      <h3>Set birthyear</h3>
+      <form onSubmit={handleUpdate}>
+        Name:
+        <input
+          value={name}
+          onChange={({ target }) => setName(target.value)}
+        /> <br/>
+        Born:
+        <input
+          value={born}
+          onChange={({ target }) => setBorn(target.value)}
+        /> <br/>
+        <button type="submit">Update author</button>
+      </form>
     </div>
   )
 }
