@@ -4,11 +4,11 @@ const Authors = (props) => {
   if (!props.show) {
     return null
   }
-  if (props.result.loading) {
+  if (props.authors.loading) {
     return <div>loading...</div>
   }
   
-  const authors = props.result.data.allAuthors
+  const authors = props.authors.data.allAuthors
 
   return (
     <div>
