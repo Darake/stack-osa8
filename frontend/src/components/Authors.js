@@ -8,9 +8,11 @@ const Authors = (props) => {
     return <div>loading...</div>
   }
   
-  const [name, setName] = useState('')
-  const [born, setBorn] = useState('')
   const authors = props.authors.data.allAuthors
+  const authorsWithoutYear = authors.filter(a => a.born === null)
+  
+  const [name, setName] = useState(authorsWithoutYear[0] ? authorsWithoutYear[0].name : '')
+  const [born, setBorn] = useState('')
 
   const handleUpdate = async e => {
     e.preventDefault()
@@ -19,6 +21,10 @@ const Authors = (props) => {
     })
     setName('')
     setBorn('')
+  }
+
+  const handleChange = e => {
+    setName(e.target.value)
   }
 
   return (
@@ -46,11 +52,12 @@ const Authors = (props) => {
       </table>
       <h3>Set birthyear</h3>
       <form onSubmit={handleUpdate}>
-        Name:
-        <input
-          value={name}
-          onChange={({ target }) => setName(target.value)}
-        /> <br/>
+        <select onChange={handleChange} value={name}>
+          {authorsWithoutYear.map(a => 
+            <option key={a.name} value={a.name}>{a.name}</option>
+          )}
+        </select>
+        <br/>
         Born:
         <input
           value={born}

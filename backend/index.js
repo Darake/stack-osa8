@@ -100,6 +100,11 @@ const typeDefs = gql`
     id: String!
   }
 
+  enum YesNo {
+    YES
+    NO
+  }
+
   type Query {
     bookCount: Int!
     authorCount: Int!
@@ -107,7 +112,9 @@ const typeDefs = gql`
       author: String
       genre: String
     ): [Book!]!
-    allAuthors: [Author!]!
+    allAuthors(
+      born: YesNo
+    ): [Author!]!
   }
 
   type Mutation {
@@ -134,7 +141,11 @@ const resolvers = {
       if (args.genre) result = result.filter(book => book.genres.includes(args.genre))
       return result
     },
-    allAuthors: () => authors
+    allAuthors: (root, args) => {
+      const result = authors
+      if (args.born) result= result.filter(a => args.born === 'YES' ? a.born : !a.phone)
+      return result
+    }
   },
   Author: {
     bookCount: (root) => books.filter(book => root.name === book.author).length
