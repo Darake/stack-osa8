@@ -94,7 +94,9 @@ const resolvers = {
       return Book.find({}).populate('author')
     },
     allAuthors: (root, args) => {
-      if (!args.born) return Author.find({})
+      if (!args.born) {
+        return Author.find({})
+      }
       return Author.find({ born: { $exists: args.born === 'YES' }})
     },
     me: (root, args, context) => {
@@ -181,7 +183,7 @@ const server = new ApolloServer({
   context: async ({ req }) => {
     const authorization = req ? req.headers.authorization : null
 
-    if (authorization && authorization.toLoverCase().startsWith('bearer ')) {
+    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
       const decodedToken = jwt.verify(authorization.substring(7), JWT_SECRET)
       const currentUser = await User.findById(decodedToken.id)
       return { currentUser }

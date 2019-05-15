@@ -16,9 +16,11 @@ const Authors = (props) => {
 
   const handleUpdate = async e => {
     e.preventDefault()
+
     await props.addYear({
-      variables: { name, setBornTo: Number(born) }
+        variables: { name, setBornTo: Number(born) }
     })
+    
     setName('')
     setBorn('')
   }
