@@ -61,13 +61,24 @@ mutation addYear($name: String!, $setBornTo: Int!) {
 
 const App = () => {
   const [page, setPage] = useState('authors')
+  const [errorMessage, setErrorMessage] = useState(null)
+
+  const handleError = (error) => {
+    console.log(error.graphQLErrors[0].message)
+    setErrorMessage(error.graphQLErrors[0].message)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 10000)
+  }
 
   const authors = useQuery(ALL_AUTHORS)
   const books = useQuery(ALL_BOOKS)
   const addBook = useMutation(CREATE_BOOK, {
+    onError: handleError,
     refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS }]
   })
   const addYear = useMutation(ADD_YEAR, {
+    onError: handleError,
     refetchQueries: [{ query: ALL_AUTHORS }]
   })
 
@@ -77,6 +88,14 @@ const App = () => {
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
         <button onClick={() => setPage('add')}>add book</button>
+      </div>
+
+      <div>
+        {errorMessage &&
+          <div style={{ color: 'red' }}>
+            {errorMessage}
+          </div>
+        }
       </div>
 
       <Authors
