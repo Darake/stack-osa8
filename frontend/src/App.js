@@ -4,7 +4,8 @@ import { useQuery, useMutation, useApolloClient } from 'react-apollo-hooks'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
-import LoginForm from './components/LoginForm';
+import LoginForm from './components/LoginForm'
+import Recommendations from './components/Recommendations'
 
 const ALL_AUTHORS = gql`
 {
@@ -17,13 +18,25 @@ const ALL_AUTHORS = gql`
 `
 
 const ALL_BOOKS = gql`
-{
-  allBooks {
+query filteredBooks($genre: String) {
+  allBooks(
+    genre: $genre
+  ) {
     title
+    published
+    genres
     author {
       name
     }
-    published
+  }
+}
+`
+
+const USER = gql`
+{
+  me {
+    username
+    favoriteGenre
   }
 }
 `
@@ -77,6 +90,7 @@ const App = () => {
 
   const authors = useQuery(ALL_AUTHORS)
   const books = useQuery(ALL_BOOKS)
+  const user = useQuery(USER)
   const addBook = useMutation(CREATE_BOOK, {
     refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS }]
   })
@@ -101,6 +115,7 @@ const App = () => {
         <button onClick={() => setPage('books')}>books</button>
         <span style={{display: token ? '' : 'none'}}>
           <button onClick={() => setPage('add')}>add book</button>
+          <button onClick={() => setPage('recommendations')}>recommendations</button>
           <button onClick={() => logout()}>logout</button>
         </span>
         <span style={{display: token ? 'none' : ''}}>
@@ -117,6 +132,7 @@ const App = () => {
       <Books
         show={page === 'books'}
         books={books}
+        ALL_BOOKS={ALL_BOOKS}
       />
 
       <NewBook
@@ -129,6 +145,12 @@ const App = () => {
         setPage={setPage}
         login={login}
         setToken={(token) => setToken(token)}
+      />
+
+      <Recommendations 
+        show={page === 'recommendations'}
+        user={user}
+        ALL_BOOKS={ALL_BOOKS}
       />
 
     </div>
