@@ -1,11 +1,33 @@
 import React, { useState } from 'react'
 import { gql } from 'apollo-boost'
+import { Subscription } from 'react-apollo'
 import { useQuery, useMutation, useApolloClient } from 'react-apollo-hooks'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import Recommendations from './components/Recommendations'
+
+const BOOK_DETAILS = gql`
+fragment BookDetails on Book {
+  id
+  title
+  published 
+  genres
+  author {
+    name
+  }
+}
+`
+
+const BOOK_ADDED = gql`
+subscription {
+  bookAdded {
+    ...BookDetails
+  }
+}
+${BOOK_DETAILS}
+`
 
 const ALL_AUTHORS = gql`
 {
@@ -152,6 +174,15 @@ const App = () => {
         user={user}
         ALL_BOOKS={ALL_BOOKS}
       />
+
+      <Subscription
+        subscription={BOOK_ADDED}
+        onSubscriptionData={({subscriptionData}) => {
+          window.alert(`a new book ${subscriptionData.data.bookAdded.title} added`)
+        }}
+      > 
+        {() => null}
+      </Subscription>
 
     </div>
   )
